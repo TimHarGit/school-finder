@@ -11,7 +11,7 @@ import polars as pl
 SCHOOLS_URL = (
     "https://duo.nl/open_onderwijsdata/images/02.-alle-schoolvestigingen-basisonderwijs.csv"
 )
-# 3 years of reference level data for averaging (like scholenopdekaart.nl)
+# 3 years of reference level data for averaging
 SCORES_URLS = {
     "2024-2025": "https://duo.nl/open_onderwijsdata/images/10.-leerlingen-bo-referentieniveaus-2024-2025.csv",
     "2023-2024": "https://duo.nl/open_onderwijsdata/images/10.-leerlingen-bo-referentieniveaus-2023-2024.csv",
@@ -222,7 +222,7 @@ def load_scores_raw(force_refresh: bool = False) -> pl.DataFrame:
 def load_scores_multiyear(force_refresh: bool = False) -> pl.DataFrame:
     """Load 3 years of reference level scores and combine them.
 
-    This matches scholenopdekaart.nl's methodology of using a 3-year average
+    This matches standard methodology of using a 3-year average
     ("driejaarsgemiddelde") for more stable results, especially for small schools.
     """
     cache_path = get_cache_path("scores_3year")
@@ -388,7 +388,7 @@ def _clean_score_columns(df: pl.DataFrame) -> pl.DataFrame:
 def calculate_metrics_3year(df: pl.DataFrame) -> pl.DataFrame:
     """Calculate 3-year average performance metrics.
 
-    This matches scholenopdekaart.nl's methodology: sum raw student counts
+    This matches standard methodology: sum raw student counts
     across 3 years, then calculate percentages from the totals.
     """
     df = _clean_score_columns(df)
@@ -492,7 +492,7 @@ def calculate_metrics_3year(df: pl.DataFrame) -> pl.DataFrame:
         ]
     )
 
-    # Combined percentages (pooled across all 3 subjects - matches scholenopdekaart.nl methodology)
+    # Combined percentages (pooled across all 3 subjects - matches standard methodology)
     # This pools all students across subjects to get ONE combined percentage
     aggregated = aggregated.with_columns(
         [
@@ -793,7 +793,7 @@ def merge_onderwijsconcept(df: pl.DataFrame) -> pl.DataFrame:
 def load_combined_data(force_refresh: bool = False) -> pl.DataFrame:
     """Load and process combined school data with 3-year average metrics.
 
-    Uses 3-year averages to match scholenopdekaart.nl's methodology.
+    Uses 3-year averages to match standard methodology.
     """
     cache_path = get_cache_path("combined")
 

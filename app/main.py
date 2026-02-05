@@ -545,25 +545,6 @@ async def reload_data():
         return {"status": "error", "message": str(e)}
 
 
-@app.get("/api/scrape-concepts")
-async def scrape_concepts():
-    """Scrape onderwijsconcept data from scholenopdekaart.nl (admin endpoint)."""
-    from app.scraper import run_scraper
-
-    try:
-        df = await run_scraper(headless=True)
-        # Reload combined data to merge new concepts
-        global _school_data
-        _school_data = load_combined_data(force_refresh=True)
-        return {
-            "status": "ok",
-            "scraped_schools": len(df),
-            "total_schools": len(_school_data),
-        }
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-
-
 if __name__ == "__main__":
     import uvicorn
 

@@ -51,3 +51,6 @@ nul
 # Uncomment if you don't want to track data files:
 # data/*.parquet
 # data/*.xlsx
+
+# Scraper (not needed for hosting)
+app/scraper.py
