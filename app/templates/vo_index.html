@@ -8,13 +8,11 @@
 <!-- Search Section with gradient background -->
 <div class="search-bg py-8">
     <div class="max-w-4xl mx-auto px-6">
-        <div class="bg-white rounded-2xl card-shadow p-5">
-            <div class="flex items-center gap-6">
-                <!-- "Ik zoek een" text -->
-                <span class="text-gray-500 text-sm whitespace-nowrap">Ik zoek een</span>
-
-                <!-- School type radio buttons -->
-                <div class="flex items-center gap-4">
+        <div class="bg-white rounded-2xl card-shadow p-4 sm:p-5">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+                <!-- School type selection row -->
+                <div class="flex items-center gap-3 sm:gap-4 flex-wrap">
+                    <span class="text-gray-500 text-sm">Ik zoek een</span>
                     <a href="/" class="flex items-center gap-2 cursor-pointer">
                         <span class="w-[18px] h-[18px] border-2 border-gray-300 rounded-full"></span>
                         <span class="text-sm text-gray-500">basisschool</span>
@@ -25,49 +23,57 @@
                     </label>
                 </div>
 
-                <!-- Divider -->
-                <div class="w-px h-8 bg-gray-200"></div>
+                <!-- Divider - hidden on mobile -->
+                <div class="hidden sm:block w-px h-8 bg-gray-200"></div>
 
-                <!-- Search input -->
-                <div class="relative flex-1">
-                    <svg class="w-5 h-5 text-gray-400 absolute left-0 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                    <input
-                        type="text"
-                        name="q"
-                        id="search"
-                        placeholder="Postcode, plaats of schoolnaam"
-                        value="{{ search_query }}"
-                        class="w-full py-2 pl-7 pr-4 border-0 border-b border-gray-200 focus:outline-none focus:border-primary text-sm bg-transparent"
-                        hx-trigger="keyup changed delay:400ms"
-                    >
+                <!-- Search input + button row -->
+                <div class="flex flex-col sm:flex-row flex-1 gap-3 sm:gap-4">
+                    <div class="relative flex-1">
+                        <svg class="w-5 h-5 text-gray-400 absolute left-0 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        <input
+                            type="text"
+                            name="q"
+                            id="search"
+                            placeholder="Postcode, plaats of schoolnaam"
+                            value="{{ search_query }}"
+                            class="w-full py-2 pl-7 pr-4 border-0 border-b border-gray-200 focus:outline-none focus:border-primary text-sm bg-transparent"
+                            hx-trigger="keyup changed delay:400ms"
+                        >
+                    </div>
+                    <button type="submit" class="w-full sm:w-auto px-6 sm:px-8 py-3 bg-primary text-white font-semibold rounded-full hover:bg-primary-dark transition text-sm whitespace-nowrap min-h-[44px]">
+                        ZOEK SCHOLEN
+                    </button>
                 </div>
-
-                <!-- Search button -->
-                <button type="submit" class="px-8 py-3 bg-primary text-white font-semibold rounded-full hover:bg-primary-dark transition text-sm whitespace-nowrap">
-                    ZOEK SCHOLEN
-                </button>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Main Content -->
-<div class="max-w-7xl mx-auto px-6 py-8">
-    <div class="flex gap-12">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    <div class="flex flex-col lg:flex-row gap-6 lg:gap-12">
         <!-- Left Sidebar: Filters -->
-        <aside class="w-72 flex-shrink-0">
+        <aside class="w-full lg:w-72 flex-shrink-0">
             <!-- Results count -->
-            <div class="mb-8">
-                <h1 class="text-2xl">
+            <div class="mb-6 lg:mb-8">
+                <h1 class="text-xl sm:text-2xl">
                     <span class="font-bold" id="result-count">{{ total_count }}</span>
                     <span class="font-normal text-gray-600"> resultaten in middelbare scholen</span>
                 </h1>
             </div>
 
-            <!-- Filter sections -->
-            <div class="space-y-6">
+            <!-- Mobile filter toggle -->
+            <button type="button" onclick="toggleFilters()" class="lg:hidden w-full flex items-center justify-between p-4 bg-white rounded-lg card-shadow mb-4">
+                <span class="font-medium text-gray-700">Filters</span>
+                <svg id="filter-chevron" class="w-5 h-5 text-gray-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+
+            <!-- Filter sections - hidden on mobile by default -->
+            <div id="filters-content" class="hidden lg:block space-y-6">
                 <!-- SORTEREN OP PRESTATIES -->
                 <div class="pb-5 border-b border-gray-100">
                     <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wider mb-4">Sorteren op prestaties</h3>
@@ -228,7 +234,7 @@
 
             <!-- Map Container (hidden) -->
             <div id="map-container" class="hidden">
-                <div id="map" class="h-[600px] rounded-xl border border-gray-200"></div>
+                <div id="map" class="h-[350px] sm:h-[450px] lg:h-[600px] rounded-xl border border-gray-200"></div>
             </div>
         </main>
     </div>

@@ -5,11 +5,11 @@
 {% block content %}
 <!-- School Header Section -->
 <div class="bg-white">
-    <div class="container mx-auto px-6 py-10">
+    <div class="container mx-auto px-4 sm:px-6 py-6 sm:py-10">
         <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
             <!-- Left: School Info -->
             <div class="flex-1 max-w-2xl">
-                <h1 class="text-4xl font-bold text-gray-900 mb-4">{{ school.name }}</h1>
+                <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">{{ school.name }}</h1>
 
                 <!-- Address with link -->
                 <a href="#" class="inline-flex items-center gap-2 text-primary hover:underline mb-6 text-lg">
@@ -20,7 +20,7 @@
                 </a>
 
                 <!-- Tags Row -->
-                <div class="flex flex-wrap items-center gap-6 mb-6 text-sm text-gray-600">
+                <div class="flex flex-wrap items-center gap-3 sm:gap-6 mb-6 text-sm text-gray-600">
                     <span class="inline-flex items-center gap-1.5">
                         <span class="uppercase tracking-wider font-medium">voortgezet onderwijs</span>
                     </span>
@@ -42,8 +42,8 @@
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="flex flex-wrap items-center gap-3 mb-6">
-                    <a href="/middelbare-scholen" class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-full hover:bg-primary-dark transition">
+                <div class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 sm:gap-3 mb-6">
+                    <a href="/middelbare-scholen" class="inline-flex items-center justify-center gap-2 px-5 py-3 min-h-[44px] bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-full hover:bg-primary-dark transition">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                         </svg>
@@ -87,13 +87,13 @@
 
 <!-- Navigation Tabs -->
 <div class="bg-white border-b sticky top-0 z-10">
-    <div class="container mx-auto px-6">
-        <nav class="flex gap-8 overflow-x-auto">
-            <a href="#" class="py-4 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-primary border-b-2 border-transparent whitespace-nowrap">Over de school</a>
-            <a href="#" class="py-4 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-primary border-b-2 border-transparent whitespace-nowrap">Het onderwijs</a>
-            <a href="#" class="py-4 text-xs font-bold uppercase tracking-wider text-primary border-b-2 border-primary whitespace-nowrap">Examenresultaten</a>
-            <a href="#" class="py-4 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-primary border-b-2 border-transparent whitespace-nowrap">Tevredenheid</a>
-            <a href="#" class="py-4 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-primary border-b-2 border-transparent whitespace-nowrap">Contact</a>
+    <div class="container mx-auto px-4 sm:px-6">
+        <nav class="flex gap-4 sm:gap-8 overflow-x-auto pb-1 -mb-px scrollbar-hide">
+            <a href="#" class="py-4 px-1 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-primary border-b-2 border-transparent whitespace-nowrap min-w-max">Over de school</a>
+            <a href="#" class="py-4 px-1 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-primary border-b-2 border-transparent whitespace-nowrap min-w-max">Het onderwijs</a>
+            <a href="#" class="py-4 px-1 text-xs font-bold uppercase tracking-wider text-primary border-b-2 border-primary whitespace-nowrap min-w-max">Examenresultaten</a>
+            <a href="#" class="py-4 px-1 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-primary border-b-2 border-transparent whitespace-nowrap min-w-max">Tevredenheid</a>
+            <a href="#" class="py-4 px-1 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-primary border-b-2 border-transparent whitespace-nowrap min-w-max">Contact</a>
         </nav>
     </div>
 </div>
@@ -125,7 +125,7 @@
 
 <!-- Main Content -->
 <div class="bg-[#f8f9fa]">
-    <div class="container mx-auto px-6 py-12">
+    <div class="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
 
         {% if school.data_quality == 'no_data' %}
         <div class="bg-white rounded-2xl p-12 text-center shadow-sm">
@@ -404,12 +404,12 @@
         {% if school.avg_cijferlijst is not none %}
         <div class="mb-20">
             <!-- Purple Box -->
-            <div class="bg-primary rounded-[2rem] p-10 md:p-12">
+            <div class="bg-primary rounded-2xl sm:rounded-[2rem] p-6 sm:p-10 md:p-12">
                 <div class="flex flex-col md:flex-row gap-10">
                     <!-- Left: Title + School explanation -->
                     <div class="md:w-2/5">
-                        <div class="flex items-center gap-3 mb-6">
-                            <h2 class="text-3xl md:text-4xl font-bold text-white">Examencijfers</h2>
+                        <div class="flex items-center gap-3 mb-4 sm:mb-6">
+                            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white">Examencijfers</h2>
                             <span class="w-6 h-6 rounded-full bg-white/20 text-white text-xs flex items-center justify-center cursor-help">i</span>
                         </div>
 
@@ -471,7 +471,7 @@
                 <h3 class="text-2xl font-semibold text-gray-900 mb-8">
                     Wat is het gemiddelde examencijfer in 2023-2024?
                 </h3>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                     <!-- Schoolexamen -->
                     <div class="bg-white rounded-2xl p-6 text-center shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
                         <span class="text-sm text-gray-500 block mb-3">Schoolexamen</span>
