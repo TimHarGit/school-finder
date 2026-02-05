@@ -53,9 +53,9 @@
 
 <!-- Main Content -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-    <div class="flex flex-col lg:flex-row gap-6 lg:gap-12">
+    <div class="flex flex-col md:flex-row gap-6 md:gap-12">
         <!-- Left Sidebar: Filters -->
-        <aside class="w-full lg:w-72 flex-shrink-0">
+        <aside class="w-full md:w-72 flex-shrink-0">
             <!-- Results count -->
             <div class="mb-6 lg:mb-8">
                 <h1 class="text-xl sm:text-2xl">
@@ -65,7 +65,7 @@
             </div>
 
             <!-- Mobile filter toggle -->
-            <button type="button" onclick="toggleFilters()" class="lg:hidden w-full flex items-center justify-between p-4 bg-white rounded-lg card-shadow mb-4">
+            <button type="button" onclick="toggleFilters()" class="md:hidden w-full flex items-center justify-between p-4 bg-white rounded-lg card-shadow mb-4">
                 <span class="font-medium text-gray-700">Filters</span>
                 <svg id="filter-chevron" class="w-5 h-5 text-gray-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -73,7 +73,7 @@
             </button>
 
             <!-- Filter sections - hidden on mobile by default -->
-            <div id="filters-content" class="hidden lg:block space-y-6">
+            <div id="filters-content" class="hidden md:block space-y-6">
                 <!-- SORTEREN OP PRESTATIES -->
                 <div class="pb-5 border-b border-gray-100">
                     <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wider mb-4">Sorteren op prestaties</h3>

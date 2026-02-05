@@ -57,7 +57,7 @@
                 </div>
 
                 <!-- Right: "BEKIJK SCHOOL" button -->
-                <div class="flex-shrink-0 w-full sm:w-auto">
+                <div class="flex-shrink-0 w-full sm:w-auto order-last sm:order-none">
                     <a href="/school/{{ school.school_id }}" class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-3 min-h-[44px] btn-outline rounded-full text-sm font-semibold">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -69,7 +69,7 @@
 
             <!-- Score badges - shown below main content -->
             {% if school.combined_f_pct is not none or school.combined_s_pct is not none %}
-            <div class="mt-3 pt-3 border-t border-gray-100 flex items-center gap-5">
+            <div class="mt-3 pt-3 border-t border-gray-100 flex flex-wrap items-center gap-x-5 gap-y-2">
                 <span class="text-xs text-gray-400 uppercase tracking-wide">Resultaten:</span>
                 {% if school.combined_f_pct is not none %}
                 <span class="text-sm">
