@@ -1,0 +1,407 @@
+{% extends "base.html" %}
+
+{% block title %}Zoek Basisscholen - Scholen vergelijken{% endblock %}
+
+{% block content %}
+<form id="filter-form" hx-get="/api/schools" hx-target="#results" hx-trigger="change from:input, change from:select, submit" hx-indicator="#loading">
+
+<!-- Search Section with gradient background -->
+<div class="search-bg py-8">
+    <div class="max-w-4xl mx-auto px-6">
+        <div class="bg-white rounded-2xl card-shadow p-5">
+            <div class="flex items-center gap-6">
+                <!-- "Ik zoek een" text -->
+                <span class="text-gray-500 text-sm whitespace-nowrap">Ik zoek een</span>
+
+                <!-- School type radio buttons -->
+                <div class="flex items-center gap-4">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="school_sector" value="basis" checked class="custom-radio">
+                        <span class="text-sm font-medium text-gray-700">basisschool</span>
+                    </label>
+                    <a href="/middelbare-scholen" class="flex items-center gap-2 cursor-pointer">
+                        <span class="w-[18px] h-[18px] border-2 border-gray-300 rounded-full"></span>
+                        <span class="text-sm text-gray-500">middelbare school</span>
+                    </a>
+                </div>
+
+                <!-- Divider -->
+                <div class="w-px h-8 bg-gray-200"></div>
+
+                <!-- Search input -->
+                <div class="relative flex-1">
+                    <svg class="w-5 h-5 text-gray-400 absolute left-0 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input
+                        type="text"
+                        name="q"
+                        id="search"
+                        placeholder="Postcode, plaats of schoolnaam"
+                        value="{{ search_query }}"
+                        class="w-full py-2 pl-7 pr-4 border-0 border-b border-gray-200 focus:outline-none focus:border-primary text-sm bg-transparent"
+                        hx-trigger="keyup changed delay:400ms"
+                    >
+                </div>
+
+                <!-- Search button -->
+                <button type="submit" class="px-8 py-3 bg-primary text-white font-semibold rounded-full hover:bg-primary-dark transition text-sm whitespace-nowrap">
+                    ZOEK SCHOLEN
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="max-w-7xl mx-auto px-6 py-8">
+    <div class="flex gap-12">
+        <!-- Left Sidebar: Filters -->
+        <aside class="w-72 flex-shrink-0">
+            <!-- Results count -->
+            <div class="mb-8">
+                <h1 class="text-2xl">
+                    <span class="font-bold" id="result-count">{{ total_count }}</span>
+                    <span class="font-normal text-gray-600"> resultaten in basisscholen</span>
+                </h1>
+            </div>
+
+            <!-- Filter sections -->
+            <div class="space-y-6">
+                <!-- SORTEREN OP PRESTATIES -->
+                <div class="pb-5 border-b border-gray-100">
+                    <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wider mb-4">Sorteren op prestaties</h3>
+                    <div class="space-y-2">
+                        <select name="sort_by" class="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-primary bg-white">
+                            <option value="combined_s" {% if sort_by == 'combined_s' %}selected{% endif %}>Streefniveau</option>
+                            <option value="combined_f" {% if sort_by == 'combined_f' %}selected{% endif %}>Fundamenteel niveau</option>
+                        </select>
+                        <select name="sort_dir" class="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-primary bg-white">
+                            <option value="desc" {% if sort_dir == 'desc' %}selected{% endif %}>Hoogste eerst</option>
+                            <option value="asc" {% if sort_dir == 'asc' %}selected{% endif %}>Laagste eerst</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- SECTOR -->
+                <div class="pb-5 border-b border-gray-100">
+                    <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wider mb-4">Sector</h3>
+                    <div class="space-y-3">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="radio" name="sector" value="basis" checked class="custom-radio">
+                            <span class="text-sm text-gray-700">Basisschool</span>
+                        </label>
+                        <a href="/middelbare-scholen" class="flex items-center gap-3 cursor-pointer">
+                            <span class="w-[18px] h-[18px] border-2 border-gray-300 rounded-full"></span>
+                            <span class="text-sm text-gray-500">Middelbare school</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- ONDERWIJSTYPE -->
+                <div class="pb-5 border-b border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wider flex items-center gap-1.5">
+                            Onderwijstype
+                            <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                        </h3>
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                        </svg>
+                    </div>
+                    <div class="space-y-2.5">
+                        <label class="flex items-center justify-between cursor-pointer py-1">
+                            <span class="flex items-center gap-3">
+                                <input type="checkbox" checked disabled class="custom-checkbox">
+                                <span class="text-sm text-gray-700">Basisonderwijs</span>
+                                <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                            </span>
+                            <span class="text-sm text-gray-400">{{ total_count }}</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- DENOMINATIE -->
+                <div class="pb-5 border-b border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wider flex items-center gap-1.5">
+                            Denominatie
+                            <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                        </h3>
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                        </svg>
+                    </div>
+                    <div class="space-y-2.5 max-h-48 overflow-y-auto">
+                        {% for opt in filter_options.denominations %}
+                        <label class="flex items-center justify-between cursor-pointer py-1">
+                            <span class="flex items-center gap-3">
+                                <input type="checkbox" name="denom" value="{{ opt.value }}" {% if opt.value in selected_denoms %}checked{% endif %} class="custom-checkbox">
+                                <span class="text-sm text-gray-700">{{ opt.value }}</span>
+                            </span>
+                            <span class="text-sm text-gray-400">{{ opt.count }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- ONDERWIJSCONCEPT -->
+                <div class="pb-5 border-b border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wider flex items-center gap-1.5">
+                            Onderwijsconcept
+                            <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                        </h3>
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                        </svg>
+                    </div>
+                    <div class="space-y-2.5 max-h-48 overflow-y-auto">
+                        {% for opt in filter_options.concepts %}
+                        <label class="flex items-center justify-between cursor-pointer py-1">
+                            <span class="flex items-center gap-3">
+                                <input type="checkbox" name="concept" value="{{ opt.value }}" {% if opt.value in selected_concepts %}checked{% endif %} class="custom-checkbox">
+                                <span class="text-sm text-gray-700">{{ opt.value }}</span>
+                            </span>
+                            <span class="text-sm text-gray-400">{{ opt.count }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- DATA KWALITEIT -->
+                <div>
+                    <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wider mb-4">Data kwaliteit</h3>
+                    <div class="space-y-3">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="radio" name="quality" value="all" {% if data_quality == 'all' %}checked{% endif %} class="custom-radio">
+                            <span class="text-sm text-gray-700">Alle scholen</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="radio" name="quality" value="reliable" {% if data_quality == 'reliable' %}checked{% endif %} class="custom-radio">
+                            <span class="text-sm text-gray-700">Betrouwbaar (20+)</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="radio" name="quality" value="limited" {% if data_quality == 'limited' %}checked{% endif %} class="custom-radio">
+                            <span class="text-sm text-gray-700">Beperkt (10+)</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right: Results Area -->
+        <main class="flex-1 min-w-0">
+            <!-- View Toggle - centered above results -->
+            <div class="flex justify-center mb-6">
+                <div class="inline-flex border-b border-gray-200">
+                    <button type="button" onclick="setView('list')" id="btn-list" class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-gray-900 border-b-2 border-primary -mb-px">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                        </svg>
+                        LIJST
+                    </button>
+                    <button type="button" onclick="setView('map')" id="btn-map" class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-gray-400 hover:text-gray-600 border-b-2 border-transparent -mb-px">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                        </svg>
+                        KAART
+                    </button>
+                </div>
+                <span id="loading" class="htmx-indicator ml-4">
+                    <svg class="animate-spin h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </span>
+            </div>
+
+            <!-- Results List -->
+            <div id="results">
+                {% include "partials/school_cards.html" %}
+            </div>
+
+            <!-- Map Container (hidden) -->
+            <div id="map-container" class="hidden">
+                <div id="map" class="h-[600px] rounded-xl border border-gray-200"></div>
+            </div>
+        </main>
+    </div>
+</div>
+
+</form>
+
+<script>
+    let map = null;
+    let markers = null;
+    let currentView = 'list';
+
+    // Custom school marker icon
+    const schoolIcon = L.divIcon({
+        className: 'school-marker',
+        html: `<svg viewBox="0 0 24 36" width="24" height="36">
+            <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24c0-6.6-5.4-12-12-12z" fill="#8b1d5e"/>
+            <circle cx="12" cy="12" r="5" fill="white"/>
+        </svg>`,
+        iconSize: [24, 36],
+        iconAnchor: [12, 36],
+        popupAnchor: [0, -36]
+    });
+
+    function setView(view) {
+        const listBtn = document.getElementById('btn-list');
+        const mapBtn = document.getElementById('btn-map');
+        const results = document.getElementById('results');
+        const mapContainer = document.getElementById('map-container');
+
+        currentView = view;
+
+        if (view === 'list') {
+            listBtn.classList.add('border-primary', 'text-gray-900');
+            listBtn.classList.remove('border-transparent', 'text-gray-400');
+            mapBtn.classList.remove('border-primary', 'text-gray-900');
+            mapBtn.classList.add('border-transparent', 'text-gray-400');
+            results.classList.remove('hidden');
+            mapContainer.classList.add('hidden');
+        } else {
+            mapBtn.classList.add('border-primary', 'text-gray-900');
+            mapBtn.classList.remove('border-transparent', 'text-gray-400');
+            listBtn.classList.remove('border-primary', 'text-gray-900');
+            listBtn.classList.add('border-transparent', 'text-gray-400');
+            results.classList.add('hidden');
+            mapContainer.classList.remove('hidden');
+
+            if (!map) {
+                initMap();
+            } else {
+                // Refresh markers when switching to map view
+                loadMapMarkers();
+            }
+        }
+    }
+
+    function initMap() {
+        map = L.map('map').setView([52.1326, 5.2913], 8);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Initialize marker cluster group
+        markers = L.markerClusterGroup({
+            maxClusterRadius: 50,
+            spiderfyOnMaxZoom: true,
+            showCoverageOnHover: false,
+            zoomToBoundsOnClick: true
+        });
+        map.addLayer(markers);
+
+        // Load initial markers
+        loadMapMarkers();
+    }
+
+    async function loadMapMarkers() {
+        if (!map || !markers) return;
+
+        // Get current filter values from form
+        const form = document.getElementById('filter-form');
+        const formData = new FormData(form);
+        const params = new URLSearchParams();
+
+        // Add form values to params (handle multiple values)
+        for (const [key, value] of formData.entries()) {
+            if (value) params.append(key, value);
+        }
+
+        // Get search query for auto-zoom
+        const searchQuery = formData.get('q') || '';
+
+        try {
+            const response = await fetch('/api/schools/geojson?' + params.toString());
+            const geojson = await response.json();
+
+            // Clear existing markers
+            markers.clearLayers();
+
+            if (geojson.features.length === 0) {
+                console.log('No schools found for the current filters');
+                return;
+            }
+
+            // Add new markers
+            const geoJsonLayer = L.geoJSON(geojson, {
+                pointToLayer: function(feature, latlng) {
+                    return L.marker(latlng, { icon: schoolIcon });
+                },
+                onEachFeature: function(feature, layer) {
+                    const p = feature.properties;
+                    const location = [p.postal_code, p.city].filter(Boolean).join(' ');
+
+                    // Format scores
+                    const fScore = p.combined_f_pct !== null ? Math.round(p.combined_f_pct) + '%' : '-';
+                    const sScore = p.combined_s_pct !== null ? Math.round(p.combined_s_pct) + '%' : '-';
+
+                    layer.bindPopup(`
+                        <div class="school-popup">
+                            <h3>${p.name || 'School'}</h3>
+                            <div class="address">${location}</div>
+                            <div class="scores">
+                                Fundamenteel: <span>${fScore}</span> &nbsp;|&nbsp;
+                                Streef: <span>${sScore}</span>
+                            </div>
+                            <a href="/school/${p.id}">BEKIJK SCHOOL</a>
+                        </div>
+                    `);
+                }
+            });
+
+            markers.addLayer(geoJsonLayer);
+
+            // Auto-zoom: fit to markers bounds
+            const bounds = markers.getBounds();
+            if (bounds.isValid()) {
+                // If there's a search query, zoom in more (city-level)
+                // Otherwise, show all of Netherlands
+                const maxZoom = searchQuery ? 13 : 8;
+                const padding = searchQuery ? [30, 30] : [20, 20];
+                map.fitBounds(bounds, { padding: padding, maxZoom: maxZoom });
+            }
+
+            console.log(`Loaded ${geojson.features.length} school markers`);
+        } catch (error) {
+            console.error('Error loading map markers:', error);
+        }
+    }
+
+    // Update result count and refresh map after HTMX swap
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        if (evt.detail.target.id === 'results') {
+            const countEl = document.querySelector('#results [data-count]');
+            if (countEl) {
+                document.getElementById('result-count').textContent = countEl.dataset.count;
+            }
+
+            // Refresh map markers if map is visible
+            if (currentView === 'map' && map) {
+                loadMapMarkers();
+            }
+        }
+    });
+
+    // Also refresh map when filters change (debounced)
+    let filterTimeout = null;
+    document.getElementById('filter-form').addEventListener('change', function(evt) {
+        if (currentView === 'map' && map) {
+            clearTimeout(filterTimeout);
+            filterTimeout = setTimeout(loadMapMarkers, 300);
+        }
+    });
+</script>
+{% endblock %}

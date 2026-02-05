@@ -1,0 +1,101 @@
+<div data-count="{{ schools | length }}"></div>
+
+{% if schools | length == 0 %}
+<div class="bg-white rounded-2xl card-shadow p-12 text-center">
+    <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <h3 class="text-lg font-semibold text-gray-900 mb-2">Geen scholen gevonden</h3>
+    <p class="text-gray-500">Probeer andere zoektermen of filters.</p>
+</div>
+{% else %}
+<div class="space-y-5">
+    {% for school in schools %}
+    <article class="bg-white rounded-xl card-shadow card-shadow-hover transition-shadow">
+        <div class="p-5">
+            <div class="flex items-start justify-between gap-6">
+                <!-- Left: School Info -->
+                <div class="flex-1 min-w-0">
+                    <!-- School name as link -->
+                    <h2 class="text-lg font-bold text-gray-900 mb-1.5">
+                        <a href="/school/{{ school.school_id }}" class="hover:text-primary transition">{{ school.name }}</a>
+                    </h2>
+
+                    <!-- Address with purple pin icon -->
+                    <div class="flex items-start gap-2 mb-3">
+                        <svg class="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-gray-600 text-sm">{% if school.street %}{{ school.street }} {{ school.house_number }}, {% endif %}{{ school.postal_code }} {{ school.city }}</span>
+                    </div>
+
+                    <!-- Tags row - ALL CAPS, spaced -->
+                    <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                        <span class="text-xs text-gray-500 font-medium uppercase tracking-wide">{{ school.denomination | default('Openbaar', true) }}</span>
+                        <span class="text-xs text-gray-500 font-medium uppercase tracking-wide">Basisonderwijs</span>
+                        {% if school.student_count %}
+                        <span class="text-xs text-gray-500 font-medium uppercase tracking-wide">{{ school.student_count | int }} leerlingen</span>
+                        {% endif %}
+                        <span class="text-xs text-gray-500 font-medium uppercase tracking-wide">{{ school.concept | default('Overige', true) }}</span>
+
+                        <!-- Action links inline with tags -->
+                        <div class="flex items-center gap-4 ml-auto">
+                            <button type="button" onclick="event.stopPropagation();" class="flex items-center gap-1.5 text-gray-400 hover:text-primary text-xs font-medium uppercase tracking-wide transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/>
+                                </svg>
+                                Bewaar
+                            </button>
+                            <button type="button" onclick="event.stopPropagation();" class="flex items-center gap-1.5 text-gray-400 hover:text-primary text-xs font-medium uppercase tracking-wide transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/>
+                                </svg>
+                                Vergelijk
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: "BEKIJK SCHOOL" button -->
+                <div class="flex-shrink-0">
+                    <a href="/school/{{ school.school_id }}" class="inline-flex items-center gap-2 px-5 py-2.5 btn-outline rounded-full text-sm font-semibold">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        BEKIJK SCHOOL
+                    </a>
+                </div>
+            </div>
+
+            <!-- Score badges - shown below main content -->
+            {% if school.combined_f_pct is not none or school.combined_s_pct is not none %}
+            <div class="mt-3 pt-3 border-t border-gray-100 flex items-center gap-5">
+                <span class="text-xs text-gray-400 uppercase tracking-wide">Resultaten:</span>
+                {% if school.combined_f_pct is not none %}
+                <span class="text-sm">
+                    <span class="text-gray-500">Fundamenteel:</span>
+                    <span class="font-semibold {% if school.combined_f_pct >= 85 %}text-green-600{% elif school.combined_f_pct >= 75 %}text-amber-500{% else %}text-red-500{% endif %}">{{ school.combined_f_pct | round(0) | int }}%</span>
+                </span>
+                {% endif %}
+                {% if school.combined_s_pct is not none %}
+                <span class="text-sm">
+                    <span class="text-gray-500">Streefniveau:</span>
+                    <span class="font-semibold {% if school.combined_s_pct >= 65 %}text-green-600{% elif school.combined_s_pct >= 50 %}text-amber-500{% else %}text-gray-500{% endif %}">{{ school.combined_s_pct | round(0) | int }}%</span>
+                </span>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </article>
+    {% endfor %}
+</div>
+
+<!-- Load more button -->
+{% if schools | length >= 50 %}
+<div class="mt-8 text-center">
+    <button type="button" class="px-8 py-3 bg-primary text-white font-semibold rounded-full hover:bg-primary-dark transition text-sm">
+        BEKIJK MEER RESULTATEN
+    </button>
+</div>
+{% endif %}
+{% endif %}

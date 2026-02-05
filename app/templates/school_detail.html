@@ -1,0 +1,414 @@
+{% extends "base.html" %}
+
+{% block title %}{{ school.name }} - Resultaten | Scholen vergelijken{% endblock %}
+
+{% block content %}
+<!-- School Header Section -->
+<div class="bg-white">
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
+            <!-- Left: School Info -->
+            <div class="flex-1 max-w-2xl">
+                <h1 class="text-4xl font-bold text-gray-900 mb-4">{{ school.name }}</h1>
+
+                <!-- Address with link -->
+                <a href="#" class="inline-flex items-center gap-2 text-primary hover:underline mb-6 text-lg">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                    </svg>
+                    {% if school.street %}{{ school.street }} {{ school.house_number }}, {% endif %}{{ school.postal_code }} {{ school.city }}
+                </a>
+
+                <!-- Tags Row -->
+                <div class="flex flex-wrap items-center gap-6 mb-6 text-sm text-gray-600">
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="uppercase tracking-wider font-medium">basisonderwijs</span>
+                        <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                    </span>
+                    {% if school.denomination %}
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="uppercase tracking-wider font-medium">{{ school.denomination }}</span>
+                        <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                    </span>
+                    {% endif %}
+                    {% if school.student_count %}
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="uppercase tracking-wider font-medium">{{ school.student_count | int }} leerlingen</span>
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap items-center gap-3 mb-6">
+                    <button class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-full hover:bg-primary-dark transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Download de schoolgids
+                    </button>
+                </div>
+
+                <!-- Secondary Actions -->
+                <div class="flex items-center gap-4 text-sm">
+                    <button class="inline-flex items-center gap-2 text-gray-600 hover:text-primary">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        <span class="font-medium">VERGELIJK</span>
+                    </button>
+                    <button class="inline-flex items-center gap-2 text-gray-600 hover:text-primary">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right: School Image with blob shape -->
+            <div class="flex-shrink-0 hidden lg:block">
+                <div class="relative w-80 h-60">
+                    <!-- Blob shape with image -->
+                    <div class="absolute inset-0 overflow-hidden" style="border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;">
+                        <div class="w-full h-full bg-gradient-to-br from-amber-200 via-orange-100 to-yellow-100 flex items-center justify-center">
+                            <!-- Placeholder illustration -->
+                            <svg class="w-32 h-32 text-primary/20" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation Tabs -->
+<div class="bg-white border-b sticky top-0 z-10">
+    <div class="container mx-auto px-4">
+        <nav class="flex gap-8 overflow-x-auto">
+            <a href="#" class="py-4 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-primary border-b-2 border-transparent whitespace-nowrap">Over de school</a>
+            <a href="#" class="py-4 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-primary border-b-2 border-transparent whitespace-nowrap">Het onderwijs</a>
+            <a href="#" class="py-4 text-xs font-bold uppercase tracking-wider text-primary border-b-2 border-primary whitespace-nowrap">Resultaten</a>
+            <a href="#" class="py-4 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-primary border-b-2 border-transparent whitespace-nowrap">Tevredenheid</a>
+            <a href="#" class="py-4 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-primary border-b-2 border-transparent whitespace-nowrap">Contact</a>
+        </nav>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="bg-[#f8f9fa]">
+    <div class="container mx-auto px-4 py-10">
+
+        {% if school.data_quality == 'no_data' %}
+        <div class="bg-white rounded-lg p-12 text-center">
+            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <p class="text-gray-500 text-lg">Geen resultaatgegevens beschikbaar voor deze school.</p>
+        </div>
+
+        {% else %}
+
+        <!-- Results Section Header -->
+        <div class="flex items-center gap-2 mb-8">
+            <h2 class="text-2xl font-bold text-primary">Resultaten doorstroomtoets</h2>
+            <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+            </svg>
+        </div>
+
+        <!-- Toelichting Section -->
+        <div class="flex flex-col lg:flex-row gap-8 mb-12">
+            <div class="flex-1">
+                <h3 class="text-lg font-semibold text-primary mb-3">Toelichting van de school</h3>
+                <p class="text-gray-600 leading-relaxed mb-3">
+                    De resultaten van de eindtoetsen liggen boven het landelijke gemiddelde. De combinatie van kinderen met hoogopgeleide ouders en de focus op onderwijskwaliteit maken dat kinderen deze resultaten behalen. De kinderen met extra begeleiding en een lager uitstroomprofiel zijn uitstekend meegenomen in dit gemiddelde. Door het werken met het Cito leerlingvolgsysteem wordt de ontwikkeling van ieder kind gedurende de ...
+                </p>
+                <button class="text-primary text-sm font-semibold hover:underline inline-flex items-center gap-1">
+                    + LEES MEER
+                </button>
+            </div>
+            <div class="flex-shrink-0 hidden lg:block">
+                <!-- Illustration -->
+                <div class="w-56 h-40 relative">
+                    <div class="absolute inset-0 bg-gradient-to-br from-amber-100 to-orange-50 rounded-2xl"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <svg class="w-24 h-24 text-amber-300" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Question Box with Purple Background -->
+        <div class="relative rounded-3xl overflow-hidden">
+            <!-- Purple gradient background -->
+            <div class="absolute inset-0 bg-gradient-to-br from-[#f0e6fa] via-[#e8dff5] to-[#f5f0fa]"></div>
+            <!-- Decorative shapes -->
+            <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-200/30 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
+            <div class="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-purple-200/20 to-transparent rounded-full translate-y-1/2 -translate-x-1/2"></div>
+
+            <div class="relative p-8 lg:p-10">
+                <h3 class="text-xl font-bold text-gray-900 mb-1">
+                    Welk percentage leerlingen behaalt het fundamentele niveau en welk percentage het streefniveau?
+                    <svg class="w-5 h-5 text-primary inline ml-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>
+                </h3>
+
+                <!-- Two Column Explanation -->
+                <div class="grid md:grid-cols-2 gap-8 mt-8">
+                    <!-- Fundamenteel -->
+                    <div>
+                        <h4 class="font-bold text-gray-900 mb-3">Fundamenteel niveau</h4>
+                        <p class="text-sm text-gray-600 leading-relaxed">
+                            Het fundamenteel niveau is het niveau voor taal en rekenen dat zoveel mogelijk leerlingen aan het einde van de basisschool moeten beheersen. Dit wordt gemeten in groep 8 met de doorstroomtoets. De Inspectie stelt dat minimaal 85% van alle leerlingen het fundamentele niveau moet behalen. Deze 85% is de signaleringswaarde voor het fundamenteel niveau en dit is voor ...
+                        </p>
+                        <button class="text-primary text-sm font-semibold hover:underline inline-flex items-center gap-1 mt-3">
+                            + LEES MEER
+                        </button>
+                    </div>
+                    <!-- Streef -->
+                    <div>
+                        <h4 class="font-bold text-gray-900 mb-3">Streefniveau</h4>
+                        <p class="text-sm text-gray-600 leading-relaxed">
+                            Het streefniveau is een hoger niveau dan het fundamenteel niveau. Het doel is dat zoveel mogelijk leerlingen ook dit hogere niveau bereiken. Op basis van de leerlingpopulatie op school wordt door de Inspectie voor elke basisschool in Nederland apart bepaald hoeveel procent van de leerlingen het streefniveau zou moeten halen. Dit percentage is de signaleringswaarde voor het ...
+                        </p>
+                        <button class="text-primary text-sm font-semibold hover:underline inline-flex items-center gap-1 mt-3">
+                            + LEES MEER
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid md:grid-cols-2 gap-6 mt-10">
+                    <!-- Fundamenteel Chart Card -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm">
+                        <div id="chart-fundamenteel" class="h-32"></div>
+                        <div class="flex items-center gap-6 mt-4 text-xs text-gray-500">
+                            <span class="flex items-center gap-2">
+                                <span class="w-3 h-3 bg-[#7c8dbd] rounded-sm"></span>
+                                deze school
+                            </span>
+                            <span class="flex items-center gap-2">
+                                <span class="w-3 h-3 bg-[#c5cad4] rounded-sm"></span>
+                                vergelijkbare scholen
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-3 flex items-center gap-1 uppercase tracking-wide">
+                            Bron: Onderwijsinspectie · Signaleringswaarde: 85%
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                            </svg>
+                        </p>
+                    </div>
+
+                    <!-- Streef Chart Card -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm">
+                        <div id="chart-streef" class="h-32"></div>
+                        <div class="flex items-center gap-6 mt-4 text-xs text-gray-500">
+                            <span class="flex items-center gap-2">
+                                <span class="w-3 h-3 bg-[#6db591] rounded-sm"></span>
+                                deze school
+                            </span>
+                            <span class="flex items-center gap-2">
+                                <span class="w-3 h-3 bg-[#c5cad4] rounded-sm"></span>
+                                vergelijkbare scholen
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-3 flex items-center gap-1 uppercase tracking-wide">
+                            Bron: Onderwijsinspectie{% if school.signaleringswaarde_s %} · Signaleringswaarde: {{ school.signaleringswaarde_s | round(1) }}%{% endif %}
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                            </svg>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% endif %}
+
+        <!-- Back Link -->
+        <div class="mt-10">
+            <a href="/" class="inline-flex items-center gap-2 text-primary hover:underline font-medium">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Terug naar zoeken
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Highcharts -->
+<script src="https://code.highcharts.com/highcharts.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Data from Jinja
+    const data = {
+        combined_f: {{ school.combined_f_pct if school.combined_f_pct is not none else 'null' }},
+        combined_s: {{ school.combined_s_pct if school.combined_s_pct is not none else 'null' }},
+        // Signaleringswaarden (benchmark values) from Onderwijsinspectie
+        signaleringswaarde_f: {{ school.signaleringswaarde_f if school.signaleringswaarde_f is not none else '85' }},
+        signaleringswaarde_s: {{ school.signaleringswaarde_s if school.signaleringswaarde_s is not none else '50' }},
+        // Vergelijkbare scholen: average results of schools in same schoolweging category
+        vergelijkbaar_f: {{ school.vergelijkbaar_f_pct if school.vergelijkbaar_f_pct is not none else '97' }},
+        vergelijkbaar_s: {{ school.vergelijkbaar_s_pct if school.vergelijkbaar_s_pct is not none else '60' }},
+        schoolweging: {{ school.schoolweging if school.schoolweging is not none else 'null' }}
+    };
+
+    // Comparison data: use vergelijkbare scholen averages (schools in same schoolweging category)
+    const comparison_f = data.vergelijkbaar_f;
+    const comparison_s = data.vergelijkbaar_s;
+
+    // Common chart styling matching scholenopdekaart.nl
+    const commonOptions = {
+        chart: {
+            type: 'bar',
+            backgroundColor: 'transparent',
+            height: 130,
+            spacing: [20, 10, 5, 10],  // Extra top spacing for the label
+            style: {
+                fontFamily: 'system-ui, -apple-system, sans-serif'
+            }
+        },
+        title: { text: null },
+        credits: { enabled: false },
+        legend: { enabled: false },
+        xAxis: {
+            categories: [''],
+            labels: { enabled: false },
+            lineWidth: 0,
+            tickWidth: 0
+        },
+        yAxis: {
+            min: 0,
+            max: 100,
+            title: { text: null },
+            labels: {
+                format: '{value}%',
+                style: { fontSize: '10px', color: '#9ca3af' }
+            },
+            gridLineWidth: 0,
+            tickInterval: 20,
+            tickLength: 0
+        },
+        tooltip: {
+            backgroundColor: '#374151',
+            borderWidth: 0,
+            borderRadius: 8,
+            style: { color: '#ffffff', fontSize: '12px' },
+            formatter: function() {
+                return '<b>' + this.series.name + '</b>: ' + this.y + '%';
+            }
+        },
+        plotOptions: {
+            bar: {
+                borderRadius: 6,
+                pointWidth: 28,
+                groupPadding: 0.15,
+                borderWidth: 0,
+                dataLabels: {
+                    enabled: true,
+                    format: '{y}%',
+                    align: 'right',
+                    style: {
+                        fontWeight: '600',
+                        fontSize: '13px',
+                        color: '#374151',
+                        textOutline: 'none'
+                    }
+                }
+            }
+        }
+    };
+
+    // Fundamenteel chart - shows 85% signaleringswaarde line (fixed for all schools)
+    if (data.combined_f !== null) {
+        Highcharts.chart('chart-fundamenteel', {
+            ...commonOptions,
+            yAxis: {
+                ...commonOptions.yAxis,
+                plotLines: [{
+                    value: data.signaleringswaarde_f,  // 85% signaleringswaarde
+                    color: '#9ca3af',
+                    width: 2,
+                    dashStyle: 'Dash',
+                    zIndex: 5,
+                    label: {
+                        text: data.signaleringswaarde_f + '%',
+                        align: 'left',
+                        verticalAlign: 'top',
+                        rotation: 0,
+                        y: -5,
+                        x: -3,
+                        style: {
+                            color: '#6b7280',
+                            fontSize: '11px',
+                            fontWeight: '600'
+                        }
+                    }
+                }]
+            },
+            series: [{
+                name: 'Deze school',
+                data: [Math.round(data.combined_f * 10) / 10],
+                color: '#7c8dbd'
+            }, {
+                name: 'Vergelijkbare scholen',
+                data: [comparison_f],
+                color: '#c5cad4'
+            }]
+        });
+    }
+
+    // Streef chart - shows school-specific signaleringswaarde line (varies by schoolweging)
+    if (data.combined_s !== null) {
+        Highcharts.chart('chart-streef', {
+            ...commonOptions,
+            yAxis: {
+                ...commonOptions.yAxis,
+                plotLines: [{
+                    value: data.signaleringswaarde_s,  // School-specific signaleringswaarde
+                    color: '#9ca3af',
+                    width: 2,
+                    dashStyle: 'Dash',
+                    zIndex: 5,
+                    label: {
+                        text: Math.round(data.signaleringswaarde_s * 10) / 10 + '%',
+                        align: 'left',
+                        verticalAlign: 'top',
+                        rotation: 0,
+                        y: -5,
+                        x: -3,
+                        style: {
+                            color: '#6b7280',
+                            fontSize: '11px',
+                            fontWeight: '600'
+                        }
+                    }
+                }]
+            },
+            series: [{
+                name: 'Deze school',
+                data: [Math.round(data.combined_s * 10) / 10],
+                color: '#6db591'
+            }, {
+                name: 'Vergelijkbare scholen',
+                data: [comparison_s],
+                color: '#c5cad4'
+            }]
+        });
+    }
+});
+</script>
+{% endblock %}

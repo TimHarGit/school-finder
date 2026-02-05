@@ -1,0 +1,796 @@
+{% extends "base.html" %}
+
+{% block title %}{{ school.name }} - {{ school.school_type }} Resultaten | Scholen vergelijken{% endblock %}
+
+{% block content %}
+<!-- School Header Section -->
+<div class="bg-white">
+    <div class="container mx-auto px-6 py-10">
+        <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
+            <!-- Left: School Info -->
+            <div class="flex-1 max-w-2xl">
+                <h1 class="text-4xl font-bold text-gray-900 mb-4">{{ school.name }}</h1>
+
+                <!-- Address with link -->
+                <a href="#" class="inline-flex items-center gap-2 text-primary hover:underline mb-6 text-lg">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                    </svg>
+                    {% if school.street %}{{ school.street }} {{ school.house_number }}, {% endif %}{{ school.postal_code }} {{ school.city }}
+                </a>
+
+                <!-- Tags Row -->
+                <div class="flex flex-wrap items-center gap-6 mb-6 text-sm text-gray-600">
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="uppercase tracking-wider font-medium">voortgezet onderwijs</span>
+                    </span>
+                    <!-- School type badge -->
+                    {% if school.school_type == 'VWO' %}
+                    <span class="text-sm font-semibold uppercase tracking-wide px-3 py-1 rounded-full bg-purple-100 text-purple-700">VWO</span>
+                    {% elif school.school_type == 'HAVO' %}
+                    <span class="text-sm font-semibold uppercase tracking-wide px-3 py-1 rounded-full bg-blue-100 text-blue-700">HAVO</span>
+                    {% elif school.school_type == 'VMBO' %}
+                    <span class="text-sm font-semibold uppercase tracking-wide px-3 py-1 rounded-full bg-green-100 text-green-700">VMBO</span>
+                    {% else %}
+                    <span class="text-sm font-semibold uppercase tracking-wide px-3 py-1 rounded-full bg-gray-100 text-gray-700">{{ school.school_type }}</span>
+                    {% endif %}
+                    {% if school.denomination %}
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="uppercase tracking-wider font-medium">{{ school.denomination }}</span>
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap items-center gap-3 mb-6">
+                    <a href="/middelbare-scholen" class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-full hover:bg-primary-dark transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Terug naar zoeken
+                    </a>
+                </div>
+
+                <!-- Secondary Actions -->
+                <div class="flex items-center gap-4 text-sm">
+                    <button class="inline-flex items-center gap-2 text-gray-600 hover:text-primary">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        <span class="font-medium">VERGELIJK</span>
+                    </button>
+                    <button class="inline-flex items-center gap-2 text-gray-600 hover:text-primary">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right: School Image with blob shape -->
+            <div class="flex-shrink-0 hidden lg:block">
+                <div class="relative w-80 h-60">
+                    <!-- Blob shape with image -->
+                    <div class="absolute inset-0 overflow-hidden" style="border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;">
+                        <div class="w-full h-full bg-gradient-to-br from-pink-200 via-purple-100 to-pink-100 flex items-center justify-center">
+                            <!-- Placeholder illustration -->
+                            <svg class="w-32 h-32 text-primary/20" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation Tabs -->
+<div class="bg-white border-b sticky top-0 z-10">
+    <div class="container mx-auto px-6">
+        <nav class="flex gap-8 overflow-x-auto">
+            <a href="#" class="py-4 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-primary border-b-2 border-transparent whitespace-nowrap">Over de school</a>
+            <a href="#" class="py-4 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-primary border-b-2 border-transparent whitespace-nowrap">Het onderwijs</a>
+            <a href="#" class="py-4 text-xs font-bold uppercase tracking-wider text-primary border-b-2 border-primary whitespace-nowrap">Examenresultaten</a>
+            <a href="#" class="py-4 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-primary border-b-2 border-transparent whitespace-nowrap">Tevredenheid</a>
+            <a href="#" class="py-4 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-primary border-b-2 border-transparent whitespace-nowrap">Contact</a>
+        </nav>
+    </div>
+</div>
+
+<!-- School Type Tabs -->
+{% if available_types and available_types | length > 1 %}
+<div class="bg-white border-b">
+    <div class="container mx-auto px-6">
+        <div class="flex items-center gap-2 py-4">
+            <span class="text-sm text-gray-500 mr-2">Bekijk resultaten voor:</span>
+            {% for type_info in available_types %}
+            <a href="/middelbare-school/{{ type_info.school_type_id }}"
+               class="px-4 py-2 text-sm font-semibold rounded-full transition
+                      {% if type_info.type == school.school_type %}
+                      bg-primary text-white
+                      {% else %}
+                      bg-gray-100 text-gray-700 hover:bg-gray-200
+                      {% endif %}">
+                {{ type_info.type }}
+                {% if type_info.pass_rate is not none %}
+                <span class="ml-1 text-xs opacity-75">({{ type_info.pass_rate | round | int }}%)</span>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Main Content -->
+<div class="bg-[#f8f9fa]">
+    <div class="container mx-auto px-6 py-12">
+
+        {% if school.data_quality == 'no_data' %}
+        <div class="bg-white rounded-2xl p-12 text-center shadow-sm">
+            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <p class="text-gray-500 text-lg">Geen examenresultaten beschikbaar voor deze school.</p>
+        </div>
+
+        {% else %}
+
+        <!-- ======================= -->
+        <!-- DOORSTROOM SECTION      -->
+        <!-- ======================= -->
+        {% if doorstroom_data %}
+        <div class="mb-20">
+            <!-- Section Header -->
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
+                Hoeveel leerlingen gaan over naar het volgende leerjaar?
+            </h2>
+
+            <!-- Intro + Illustration Row -->
+            <div class="flex flex-col md:flex-row gap-8 mb-10">
+                <p class="text-gray-600 md:w-3/5 leading-relaxed">
+                    Hier zie je het percentage leerlingen dat zonder vertraging de onderbouw
+                    doorloopt. Je ziet ook het percentage leerlingen dat zonder vertraging de
+                    bovenbouw doorloopt. De school kan je vertellen wat ze van de resultaten vindt.
+                </p>
+                <!-- Illustration -->
+                <div class="md:w-2/5 flex justify-center md:justify-end">
+                    <svg class="w-56 h-36" viewBox="0 0 200 120" fill="none">
+                        <!-- Students illustration -->
+                        <rect x="20" y="80" width="160" height="30" rx="4" fill="#E0F2F1"/>
+                        <!-- Student 1 -->
+                        <circle cx="50" cy="50" r="15" fill="#B2DFDB"/>
+                        <rect x="40" y="70" width="20" height="25" rx="3" fill="#80CBC4"/>
+                        <!-- Student 2 -->
+                        <circle cx="100" cy="45" r="18" fill="#B2DFDB"/>
+                        <rect x="87" y="68" width="26" height="30" rx="3" fill="#80CBC4"/>
+                        <!-- Student 3 -->
+                        <circle cx="150" cy="50" r="15" fill="#B2DFDB"/>
+                        <rect x="140" y="70" width="20" height="25" rx="3" fill="#80CBC4"/>
+                        <!-- Arrow -->
+                        <path d="M170 95 L185 95 L180 90 M185 95 L180 100" stroke="#4DB6AC" stroke-width="2" fill="none"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Two Card Grid -->
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Card 1: Doorstroom Percentage (Stacked Bar) -->
+                <div class="bg-white rounded-3xl p-8 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+                    <div class="flex items-center justify-center gap-2 mb-8">
+                        <h3 class="text-lg font-semibold text-gray-900 text-center">Doorstroom percentage</h3>
+                        <span class="w-5 h-5 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center cursor-help" title="Percentage leerlingen dat doorstroomt naar het volgende leerjaar">i</span>
+                    </div>
+
+                    <p class="text-gray-500 text-sm text-center mb-6">
+                        Gebaseerd op {{ doorstroom_data.total_students }} leerlingen
+                    </p>
+
+                    <!-- Stacked bar -->
+                    <div class="mb-8">
+                        <div class="flex h-10 rounded-lg overflow-hidden">
+                            <div class="bg-[#3D9A3D] transition-all" style="width: {{ doorstroom_data.pct_doorstroom }}%" title="Doorstroom {{ doorstroom_data.pct_doorstroom }}%"></div>
+                            <div class="bg-[#66BB6A] transition-all" style="width: {{ doorstroom_data.pct_opstroom }}%" title="Opstroom {{ doorstroom_data.pct_opstroom }}%"></div>
+                            <div class="bg-[#FFA726] transition-all" style="width: {{ doorstroom_data.pct_zittenblijvers }}%" title="Zittenblijvers {{ doorstroom_data.pct_zittenblijvers }}%"></div>
+                            <div class="bg-[#EF5350] transition-all" style="width: {{ doorstroom_data.pct_afstroom }}%" title="Afstroom {{ doorstroom_data.pct_afstroom }}%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-[#3D9A3D] flex-shrink-0"></span>
+                            <span class="text-gray-600">Doorstroom <span class="font-semibold">{{ doorstroom_data.pct_doorstroom }}%</span></span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-[#66BB6A] flex-shrink-0"></span>
+                            <span class="text-gray-600">Opstroom <span class="font-semibold">{{ doorstroom_data.pct_opstroom }}%</span></span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-[#FFA726] flex-shrink-0"></span>
+                            <span class="text-gray-600">Zittenblijvers <span class="font-semibold">{{ doorstroom_data.pct_zittenblijvers }}%</span></span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-[#EF5350] flex-shrink-0"></span>
+                            <span class="text-gray-600">Afstroom <span class="font-semibold">{{ doorstroom_data.pct_afstroom }}%</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="mt-8 pt-4 border-t border-gray-100">
+                        <span class="text-xs text-gray-400 font-medium flex items-center gap-1.5">
+                            BRON
+                            <span class="w-4 h-4 rounded-full bg-primary/10 text-primary text-[10px] flex items-center justify-center">i</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Card 2: Doorstroom Details -->
+                <div class="bg-white rounded-3xl p-8 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+                    <div class="flex items-center justify-center gap-2 mb-8">
+                        <h3 class="text-lg font-semibold text-gray-900 text-center">Toelichting doorstroom</h3>
+                        <span class="w-5 h-5 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center cursor-help">i</span>
+                    </div>
+
+                    <div class="space-y-5 text-sm text-gray-600">
+                        <p>
+                            <strong class="text-gray-900">Doorstroom:</strong> Leerlingen die normaal overgaan naar het volgende leerjaar.
+                        </p>
+                        <p>
+                            <strong class="text-gray-900">Opstroom:</strong> Leerlingen die naar een hoger niveau gaan (bijv. van HAVO naar VWO).
+                        </p>
+                        <p>
+                            <strong class="text-gray-900">Zittenblijvers:</strong> Leerlingen die het jaar overdoen.
+                        </p>
+                        <p>
+                            <strong class="text-gray-900">Afstroom:</strong> Leerlingen die naar een lager niveau gaan (bijv. van VWO naar HAVO).
+                        </p>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="mt-8 pt-4 border-t border-gray-100">
+                        <span class="text-xs text-gray-400 font-medium">
+                            Bron: DUO Open Onderwijsdata 2023-2024
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- ======================= -->
+        <!-- SLAGINGSPERCENTAGE      -->
+        <!-- ======================= -->
+        <div class="mb-20">
+            <!-- Section Header -->
+            <div class="flex items-center gap-3 mb-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Slaagpercentage</h2>
+                <span class="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-medium cursor-help" title="Informatie over slaagpercentage">i</span>
+            </div>
+
+            <p class="text-gray-600 mb-10 max-w-3xl leading-relaxed">
+                Hier zie je hoeveel leerlingen centraal examen hebben gedaan en hoeveel
+                procent daarvan het diploma heeft behaald. De school kan je vertellen wat ze
+                van de resultaten vindt.
+            </p>
+
+            <!-- Data Quality Warning if applicable -->
+            {% if school.data_quality == 'insufficient' %}
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8">
+                <p class="text-amber-800 text-sm">
+                    <svg class="w-5 h-5 inline-block mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    Let op: Deze resultaten zijn gebaseerd op een klein aantal examenkandidaten ({{ school.candidates_3year | round | int }} over 3 jaar).
+                </p>
+            </div>
+            {% endif %}
+
+            <!-- Two Card Grid -->
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Card 1: Current Year Pass Rates (Bar Chart) -->
+                <div class="bg-white rounded-3xl p-8 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+                    <div class="flex items-center justify-center gap-2 mb-8">
+                        <h3 class="text-lg font-semibold text-gray-900 text-center">Hoeveel leerlingen zijn geslaagd?</h3>
+                        <span class="w-5 h-5 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center cursor-help">i</span>
+                    </div>
+
+                    <!-- Bar Chart for current school type -->
+                    <div class="space-y-5 mb-8">
+                        <div>
+                            <span class="text-sm text-gray-500 mb-3 block lowercase">{{ school.school_type }}</span>
+                            <div class="space-y-2">
+                                <!-- School bar -->
+                                <div class="flex items-center gap-3">
+                                    <div class="flex-1 h-8 bg-gray-100 rounded-lg overflow-hidden">
+                                        {% if school.pass_rate_current is not none %}
+                                        <div class="h-full bg-[#3D9A3D] rounded-lg" style="width: {{ school.pass_rate_current }}%"></div>
+                                        {% endif %}
+                                    </div>
+                                    <span class="text-sm font-semibold w-14 text-right">{% if school.pass_rate_current is not none %}{{ school.pass_rate_current | round | int }}%{% else %}-{% endif %}</span>
+                                </div>
+                                <!-- Comparison bar -->
+                                <div class="flex items-center gap-3">
+                                    <div class="flex-1 h-8 bg-gray-100 rounded-lg overflow-hidden">
+                                        <div class="h-full bg-gray-300 rounded-lg" style="width: 90%"></div>
+                                    </div>
+                                    <span class="text-sm text-gray-500 w-14 text-right">90%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="flex items-center gap-6 text-xs text-gray-500 mb-6">
+                        <span class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-[#3D9A3D]"></span>
+                            deze school
+                        </span>
+                        <span class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-gray-300"></span>
+                            vergelijkbare scholen
+                        </span>
+                    </div>
+
+                    <!-- 3-Year Average -->
+                    {% if school.pass_rate_3year is not none %}
+                    <div class="p-4 bg-gray-50 rounded-xl mb-6">
+                        <p class="text-xs text-gray-500 mb-1">3-jarig gemiddelde</p>
+                        <p class="text-2xl font-bold {% if school.pass_rate_3year >= 95 %}text-green-600{% elif school.pass_rate_3year >= 85 %}text-gray-900{% else %}text-red-500{% endif %}">
+                            {{ school.pass_rate_3year | round | int }}%
+                        </p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Footer -->
+                    <div class="pt-6 border-t border-gray-100 flex items-center justify-between">
+                        <button onclick="toggleSection('slaag-info')" class="text-xs text-primary font-medium flex items-center gap-1 hover:underline">
+                            + MEER INFORMATIE
+                        </button>
+                        <span class="text-xs text-gray-400 flex items-center gap-1.5">
+                            BRON
+                            <span class="w-4 h-4 rounded-full bg-primary/10 text-primary text-[10px] flex items-center justify-center">i</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Card 2: Historical Line Chart -->
+                <div class="bg-white rounded-3xl p-8 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+                    <div class="flex items-center justify-center gap-2 mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900 text-center">Hoeveel leerlingen zijn de afgelopen jaren geslaagd?</h3>
+                        <span class="w-5 h-5 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center cursor-help">i</span>
+                    </div>
+
+                    <!-- School Type Indicator -->
+                    <div class="flex justify-center gap-4 mb-8">
+                        <span class="text-sm font-medium text-gray-900 border-b-2 border-primary pb-1">{{ school.school_type }}</span>
+                    </div>
+
+                    <!-- Line Chart -->
+                    {% if historical_data and historical_data | length > 1 %}
+                    <div class="h-52">
+                        <canvas id="passRateChart"></canvas>
+                    </div>
+                    {% else %}
+                    <div class="h-52 flex items-center justify-center text-gray-400 text-sm">
+                        Onvoldoende historische data beschikbaar
+                    </div>
+                    {% endif %}
+
+                    <!-- Footer -->
+                    <div class="mt-6 pt-6 border-t border-gray-100">
+                        <span class="text-xs text-gray-400 flex items-center gap-1.5">
+                            BRON
+                            <span class="w-4 h-4 rounded-full bg-primary/10 text-primary text-[10px] flex items-center justify-center">i</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Collapsible Info -->
+            <div id="slaag-info-content" class="mt-6 bg-white rounded-2xl p-6 hidden">
+                <p class="text-gray-600 text-sm leading-relaxed">
+                    Het slagingspercentage geeft aan welk deel van de examenkandidaten uiteindelijk hun diploma heeft behaald.
+                    Het landelijk gemiddelde slagingspercentage voor {{ school.school_type }} ligt rond de 90%.
+                    Een hoger percentage kan duiden op goede begeleiding van leerlingen richting het examen.
+                </p>
+            </div>
+        </div>
+
+        <!-- ======================= -->
+        <!-- EXAMENCIJFERS           -->
+        <!-- ======================= -->
+        {% if school.avg_cijferlijst is not none %}
+        <div class="mb-20">
+            <!-- Purple Box -->
+            <div class="bg-primary rounded-[2rem] p-10 md:p-12">
+                <div class="flex flex-col md:flex-row gap-10">
+                    <!-- Left: Title + School explanation -->
+                    <div class="md:w-2/5">
+                        <div class="flex items-center gap-3 mb-6">
+                            <h2 class="text-3xl md:text-4xl font-bold text-white">Examencijfers</h2>
+                            <span class="w-6 h-6 rounded-full bg-white/20 text-white text-xs flex items-center justify-center cursor-help">i</span>
+                        </div>
+
+                        <h3 class="text-xl font-semibold text-white mb-4">Toelichting</h3>
+                        <p class="text-white/80 leading-relaxed mb-5">
+                            De cijfers tonen het gemiddelde van het schoolexamen, centraal examen
+                            en het eindcijfer voor {{ school.school_type }} leerlingen.
+                        </p>
+                        <p class="text-white/80 leading-relaxed">
+                            Het <strong class="text-white">schoolexamen</strong> omvat alle toetsen die de school zelf afneemt.
+                            Het <strong class="text-white">centraal examen</strong> is het landelijke examen.
+                            Het <strong class="text-white">eindcijfer</strong> is het gemiddelde van beide.
+                        </p>
+                    </div>
+
+                    <!-- Right: White card with line chart -->
+                    <div class="md:w-3/5">
+                        <div class="bg-white rounded-2xl p-8">
+                            <div class="flex items-center justify-center gap-2 mb-6">
+                                <h3 class="text-lg font-semibold text-gray-900 text-center">
+                                    Wat is het gemiddelde examencijfer in de afgelopen jaren?
+                                </h3>
+                                <span class="w-5 h-5 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center">i</span>
+                            </div>
+
+                            <!-- School Type Indicator -->
+                            <div class="flex justify-center gap-4 mb-8">
+                                <span class="text-sm font-medium text-gray-900 border-b-2 border-primary pb-1">{{ school.school_type }}</span>
+                            </div>
+
+                            <!-- Line Chart -->
+                            {% if historical_data and historical_data | length > 1 %}
+                            <div class="h-52">
+                                <canvas id="examGradesChart"></canvas>
+                            </div>
+                            {% else %}
+                            <div class="h-52 flex items-center justify-center text-gray-400 text-sm">
+                                Onvoldoende historische data beschikbaar
+                            </div>
+                            {% endif %}
+
+                            <!-- Footer -->
+                            <div class="mt-6 pt-6 border-t border-gray-100 flex justify-between">
+                                <button onclick="toggleSection('examencijfers-info')" class="text-xs text-primary font-medium hover:underline">
+                                    + MEER INFORMATIE
+                                </button>
+                                <span class="text-xs text-gray-400 flex items-center gap-1.5">
+                                    BRON
+                                    <span class="w-4 h-4 rounded-full bg-primary/10 text-primary text-[10px] flex items-center justify-center">i</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Year Grades (below purple box) -->
+            <div class="mt-10">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-8">
+                    Wat is het gemiddelde examencijfer in 2023-2024?
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <!-- Schoolexamen -->
+                    <div class="bg-white rounded-2xl p-6 text-center shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+                        <span class="text-sm text-gray-500 block mb-3">Schoolexamen</span>
+                        <span class="text-4xl font-bold {% if school.avg_schoolexamen >= 7 %}text-green-600{% elif school.avg_schoolexamen >= 6 %}text-gray-900{% else %}text-red-500{% endif %}">
+                            {{ school.avg_schoolexamen }}
+                        </span>
+                        {% if school.national_avg_schoolexamen is not none %}
+                        <span class="text-xs text-gray-400 block mt-3">Vergelijkbare scholen: {{ school.national_avg_schoolexamen }}</span>
+                        {% endif %}
+                    </div>
+                    <!-- Centraal examen -->
+                    <div class="bg-white rounded-2xl p-6 text-center shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+                        <span class="text-sm text-gray-500 block mb-3">Centraal examen</span>
+                        <span class="text-4xl font-bold {% if school.avg_centraal_examen >= 7 %}text-green-600{% elif school.avg_centraal_examen >= 6 %}text-gray-900{% else %}text-red-500{% endif %}">
+                            {{ school.avg_centraal_examen }}
+                        </span>
+                        {% if school.national_avg_centraal_examen is not none %}
+                        <span class="text-xs text-gray-400 block mt-3">Vergelijkbare scholen: {{ school.national_avg_centraal_examen }}</span>
+                        {% endif %}
+                    </div>
+                    <!-- Eindcijfer -->
+                    <div class="bg-white rounded-2xl p-6 text-center shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+                        <span class="text-sm text-gray-500 block mb-3">Eindcijfer</span>
+                        <span class="text-4xl font-bold {% if school.avg_cijferlijst >= 7 %}text-green-600{% elif school.avg_cijferlijst >= 6 %}text-gray-900{% else %}text-red-500{% endif %}">
+                            {{ school.avg_cijferlijst }}
+                        </span>
+                        {% if school.national_avg_cijferlijst is not none %}
+                        <span class="text-xs text-gray-400 block mt-3">Vergelijkbare scholen: {{ school.national_avg_cijferlijst }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mt-6 text-xs text-gray-400 flex items-center gap-1.5">
+                    BRON
+                    <span class="w-4 h-4 rounded-full bg-primary/10 text-primary text-[10px] flex items-center justify-center">i</span>
+                </div>
+            </div>
+
+            <!-- Collapsible Info -->
+            <div id="examencijfers-info-content" class="mt-6 bg-white rounded-2xl p-6 hidden">
+                <p class="text-gray-600 text-sm leading-relaxed">
+                    De <span class="text-green-600 font-medium">groene kleur</span> geeft aan dat het cijfer 7 of hoger is.
+                    Een cijfer onder de 6 wordt in <span class="text-red-500 font-medium">rood</span> weergegeven.
+                    De vergelijkbare scholen zijn scholen met dezelfde schoolsoort en een vergelijkbare leerlingpopulatie.
+                </p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- ======================= -->
+        <!-- PROFILE BREAKDOWN       -->
+        <!-- ======================= -->
+        {% if profile_breakdown and profile_breakdown | length > 0 %}
+        <div class="mb-20">
+            <div class="bg-white rounded-3xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden">
+                <!-- Collapsible Header -->
+                <button type="button" onclick="toggleSection('profile-breakdown')" class="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition">
+                    <h3 class="font-semibold text-gray-900 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                        </svg>
+                        {% if school.school_type == 'VMBO' %}
+                        Resultaten per sector
+                        {% else %}
+                        Resultaten per profiel
+                        {% endif %}
+                    </h3>
+                    <svg id="profile-breakdown-chevron" class="w-5 h-5 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <!-- Collapsible Content -->
+                <div id="profile-breakdown-content" class="px-6 pb-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-gray-200">
+                                    <th class="text-left py-3 px-2 font-semibold text-gray-700">
+                                        {% if school.school_type == 'VMBO' %}Sector{% else %}Profiel{% endif %}
+                                    </th>
+                                    <th class="text-right py-3 px-2 font-semibold text-gray-700">Kandidaten</th>
+                                    <th class="text-right py-3 px-2 font-semibold text-gray-700">Geslaagd</th>
+                                    <th class="text-right py-3 px-2 font-semibold text-gray-700">Slagings%</th>
+                                    <th class="text-right py-3 px-2 font-semibold text-gray-700">Gem. eindcijfer</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for profile in profile_breakdown %}
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-3 px-2">
+                                        <span class="font-medium text-gray-900">{{ profile.profile }}</span>
+                                        {% if school.school_type != 'VMBO' %}
+                                        <span class="text-gray-500 text-xs ml-1">({{ profile.profile_full }})</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-right py-3 px-2 text-gray-600">{{ profile.candidates }}</td>
+                                    <td class="text-right py-3 px-2 text-gray-600">{{ profile.passed }}</td>
+                                    <td class="text-right py-3 px-2">
+                                        {% if profile.pass_rate is not none %}
+                                        <span class="font-semibold {% if profile.pass_rate >= 95 %}text-green-600{% elif profile.pass_rate >= 85 %}text-amber-500{% else %}text-red-500{% endif %}">
+                                            {{ profile.pass_rate }}%
+                                        </span>
+                                        {% else %}-{% endif %}
+                                    </td>
+                                    <td class="text-right py-3 px-2">
+                                        {% if profile.avg_cijferlijst is not none %}
+                                        <span class="font-semibold {% if profile.avg_cijferlijst >= 7 %}text-green-600{% elif profile.avg_cijferlijst >= 6 %}text-gray-700{% else %}text-red-500{% endif %}">
+                                            {{ profile.avg_cijferlijst }}
+                                        </span>
+                                        {% else %}-{% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-4">
+                        <span class="font-medium">Bron:</span> DUO Open Onderwijsdata 2023-2024
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- ======================= -->
+        <!-- HISTORICAL TABLE        -->
+        <!-- ======================= -->
+        {% if historical_data and historical_data | length > 1 %}
+        <div class="mb-20">
+            <div class="bg-white rounded-3xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden">
+                <button type="button" onclick="toggleSection('historical-trend')" class="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition">
+                    <h3 class="font-semibold text-gray-900 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        Historisch overzicht ({{ historical_data | length }} jaren)
+                    </h3>
+                    <svg id="historical-trend-chevron" class="w-5 h-5 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="historical-trend-content" class="px-6 pb-6 hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-gray-200">
+                                    <th class="text-left py-3 px-2 font-semibold text-gray-700">Schooljaar</th>
+                                    <th class="text-right py-3 px-2 font-semibold text-gray-700">Schoolexamen</th>
+                                    <th class="text-right py-3 px-2 font-semibold text-gray-700">Centraal examen</th>
+                                    <th class="text-right py-3 px-2 font-semibold text-gray-700">Eindcijfer</th>
+                                    <th class="text-right py-3 px-2 font-semibold text-gray-700">Slagings%</th>
+                                    <th class="text-right py-3 px-2 font-semibold text-gray-700">Kandidaten</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for year_data in historical_data %}
+                                <tr class="border-b border-gray-100 {% if loop.first %}bg-primary/5{% else %}hover:bg-gray-50{% endif %}">
+                                    <td class="py-3 px-2 font-medium text-gray-900">{{ year_data.year }}</td>
+                                    <td class="text-right py-3 px-2 text-gray-600">
+                                        {% if year_data.avg_schoolexamen is not none %}{{ year_data.avg_schoolexamen }}{% else %}-{% endif %}
+                                    </td>
+                                    <td class="text-right py-3 px-2 text-gray-600">
+                                        {% if year_data.avg_centraal_examen is not none %}{{ year_data.avg_centraal_examen }}{% else %}-{% endif %}
+                                    </td>
+                                    <td class="text-right py-3 px-2">
+                                        {% if year_data.avg_cijferlijst is not none %}
+                                        <span class="font-semibold {% if year_data.avg_cijferlijst >= 7 %}text-green-600{% elif year_data.avg_cijferlijst >= 6 %}text-gray-700{% else %}text-red-500{% endif %}">
+                                            {{ year_data.avg_cijferlijst }}
+                                        </span>
+                                        {% else %}-{% endif %}
+                                    </td>
+                                    <td class="text-right py-3 px-2">
+                                        {% if year_data.pass_rate is not none %}
+                                        <span class="font-semibold {% if year_data.pass_rate >= 95 %}text-green-600{% elif year_data.pass_rate >= 85 %}text-amber-500{% else %}text-red-500{% endif %}">
+                                            {{ year_data.pass_rate }}%
+                                        </span>
+                                        {% else %}-{% endif %}
+                                    </td>
+                                    <td class="text-right py-3 px-2 text-gray-500">{{ year_data.total_candidates }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-4">
+                        <span class="font-medium">Bron:</span> DUO Open Onderwijsdata
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+function toggleSection(sectionId) {
+    const content = document.getElementById(sectionId + '-content');
+    const chevron = document.getElementById(sectionId + '-chevron');
+
+    if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        if (chevron) chevron.classList.add('rotate-180');
+    } else {
+        content.classList.add('hidden');
+        if (chevron) chevron.classList.remove('rotate-180');
+    }
+}
+
+// Chart.js Initialization
+{% if historical_data and historical_data | length > 1 %}
+document.addEventListener('DOMContentLoaded', function() {
+    // Shared chart styling options (scholenopdekaart.nl style)
+    const chartDefaults = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: { enabled: true }
+        },
+        elements: {
+            line: {
+                borderWidth: 2,
+                tension: 0.1
+            },
+            point: {
+                radius: 5,
+                hoverRadius: 7,
+                backgroundColor: '#fff',
+                borderWidth: 2
+            }
+        }
+    };
+
+    // Historical Pass Rate Chart
+    const passRateCtx = document.getElementById('passRateChart');
+    if (passRateCtx) {
+        new Chart(passRateCtx.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: [{% for d in historical_data %}'{{ d.year }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+                datasets: [{
+                    label: 'Deze school',
+                    data: [{% for d in historical_data %}{% if d.pass_rate is not none %}{{ d.pass_rate }}{% else %}null{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}],
+                    borderColor: '#3D9A3D',
+                    backgroundColor: 'rgba(61, 154, 61, 0.15)',
+                    fill: true,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#3D9A3D'
+                }]
+            },
+            options: {
+                ...chartDefaults,
+                scales: {
+                    y: {
+                        min: 50,
+                        max: 100,
+                        ticks: {
+                            font: { size: 11 },
+                            color: '#666'
+                        },
+                        grid: { color: '#f0f0f0' }
+                    },
+                    x: {
+                        ticks: {
+                            font: { size: 11 },
+                            color: '#666'
+                        },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+
+    // Historical Exam Grades Chart
+    const examCtx = document.getElementById('examGradesChart');
+    if (examCtx) {
+        new Chart(examCtx.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: [{% for d in historical_data %}'{{ d.year }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+                datasets: [{
+                    label: 'Eindcijfer',
+                    data: [{% for d in historical_data %}{% if d.avg_cijferlijst is not none %}{{ d.avg_cijferlijst }}{% else %}null{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}],
+                    borderColor: '#3D9A3D',
+                    backgroundColor: 'rgba(61, 154, 61, 0.15)',
+                    fill: true,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#3D9A3D'
+                }]
+            },
+            options: {
+                ...chartDefaults,
+                scales: {
+                    y: {
+                        min: 1,
+                        max: 10,
+                        ticks: {
+                            font: { size: 11 },
+                            color: '#666'
+                        },
+                        grid: { color: '#f0f0f0' }
+                    },
+                    x: {
+                        ticks: {
+                            font: { size: 11 },
+                            color: '#666'
+                        },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+});
+{% endif %}
+</script>
+{% endblock %}

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Scholen vergelijken{% endblock %}</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- HTMX for dynamic interactions -->
+    <script src="/static/js/htmx.min.js"></script>
+
+    <!-- Leaflet for maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Leaflet MarkerCluster for clustering many markers -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+    <!-- Chart.js for historical data charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Google Fonts - matching original site's clean typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8b1d5e',
+                        'primary-dark': '#6d1749',
+                        'primary-light': '#a94278',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base styles */
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* HTMX loading states */
+        .htmx-request .htmx-indicator { display: inline-block; }
+        .htmx-indicator { display: none; }
+        [data-loading] { opacity: 0.6; pointer-events: none; }
+
+        /* Custom radio buttons - filled purple circle style */
+        input[type="radio"].custom-radio {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #d1d5db;
+            border-radius: 50%;
+            outline: none;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.15s ease;
+        }
+        input[type="radio"].custom-radio:checked {
+            border-color: #8b1d5e;
+            background-color: #8b1d5e;
+        }
+        input[type="radio"].custom-radio:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+        }
+        input[type="radio"].custom-radio:hover:not(:checked) {
+            border-color: #9ca3af;
+        }
+
+        /* Custom checkboxes */
+        input[type="checkbox"].custom-checkbox {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.15s ease;
+        }
+        input[type="checkbox"].custom-checkbox:checked {
+            border-color: #8b1d5e;
+            background-color: #8b1d5e;
+        }
+        input[type="checkbox"].custom-checkbox:checked::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 5px;
+            width: 5px;
+            height: 9px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        /* Card shadows */
+        .card-shadow {
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+        }
+        .card-shadow-hover:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
+        }
+
+        /* Smooth scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+
+        /* Purple gradient background for search section */
+        .search-bg {
+            background: linear-gradient(180deg, #f5f0f7 0%, #ebe4ef 100%);
+        }
+
+        /* Outline button style */
+        .btn-outline {
+            border: 2px solid #8b1d5e;
+            color: #8b1d5e;
+            background: white;
+            transition: all 0.15s ease;
+        }
+        .btn-outline:hover {
+            background: #fdf2f8;
+        }
+
+        /* Custom map marker styles */
+        .school-marker {
+            background: transparent;
+            border: none;
+        }
+        .school-marker svg {
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        /* Marker cluster styling - match primary color */
+        .marker-cluster-small {
+            background-color: rgba(139, 29, 94, 0.6);
+        }
+        .marker-cluster-small div {
+            background-color: rgba(139, 29, 94, 0.8);
+        }
+        .marker-cluster-medium {
+            background-color: rgba(139, 29, 94, 0.7);
+        }
+        .marker-cluster-medium div {
+            background-color: rgba(139, 29, 94, 0.9);
+        }
+        .marker-cluster-large {
+            background-color: rgba(139, 29, 94, 0.8);
+        }
+        .marker-cluster-large div {
+            background-color: rgba(139, 29, 94, 1);
+        }
+        .marker-cluster {
+            background-clip: padding-box;
+            border-radius: 20px;
+        }
+        .marker-cluster div {
+            width: 30px;
+            height: 30px;
+            margin-left: 5px;
+            margin-top: 5px;
+            text-align: center;
+            border-radius: 15px;
+            font: 12px Inter, sans-serif;
+            font-weight: 600;
+            color: white;
+        }
+        .marker-cluster span {
+            line-height: 30px;
+        }
+
+        /* Map popup styling */
+        .leaflet-popup-content-wrapper {
+            border-radius: 12px;
+            padding: 0;
+        }
+        .leaflet-popup-content {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+        }
+        .school-popup {
+            padding: 12px 16px;
+            min-width: 200px;
+        }
+        .school-popup h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        .school-popup .address {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        .school-popup .scores {
+            font-size: 12px;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        .school-popup .scores span {
+            font-weight: 600;
+        }
+        .school-popup a {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #8b1d5e;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            border-radius: 9999px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .school-popup a:hover {
+            background: #6d1749;
+        }
+    </style>
+</head>
+<body class="bg-white min-h-screen flex flex-col font-sans">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="/" class="flex items-center gap-2.5">
+                <!-- School building icon -->
+                <svg class="w-8 h-8" viewBox="0 0 32 32" fill="none">
+                    <path d="M16 2L4 10V12H28V10L16 2Z" fill="#8b1d5e"/>
+                    <rect x="6" y="12" width="20" height="16" fill="#8b1d5e"/>
+                    <rect x="13" y="18" width="6" height="10" fill="white"/>
+                    <rect x="8" y="15" width="4" height="4" fill="white"/>
+                    <rect x="20" y="15" width="4" height="4" fill="white"/>
+                </svg>
+                <span class="text-lg font-semibold text-primary">Scholen vergelijken</span>
+            </a>
+
+            <!-- Right side icons -->
+            <nav class="flex items-center gap-5">
+                <!-- Compare button with badge -->
+                <button class="relative text-gray-500 hover:text-primary transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/>
+                    </svg>
+                    <span class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center">0</span>
+                </button>
+
+                <!-- Save/Heart button -->
+                <button class="text-gray-500 hover:text-primary transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/>
+                    </svg>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-primary text-white py-10 mt-auto">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-10">
+                <div>
+                    <h3 class="font-semibold mb-4">Over Scholen vergelijken</h3>
+                    <ul class="space-y-2 text-sm text-pink-200">
+                        <li><a href="#" class="hover:text-white transition">Gebruikersvoorwaarden</a></li>
+                        <li><a href="#" class="hover:text-white transition">Privacyverklaring en cookiegebruik</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-4">Bronnen</h3>
+                    <ul class="space-y-2 text-sm text-pink-200">
+                        <li><a href="https://duo.nl/open_onderwijsdata/" class="hover:text-white transition">DUO Open Onderwijsdata</a></li>
+                        <li><a href="https://www.onderwijsinspectie.nl/" class="hover:text-white transition">Onderwijsinspectie</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
