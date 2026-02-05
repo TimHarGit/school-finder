@@ -1,0 +1,16 @@
+{
+  "name": "School Finder",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "features": {
+    "ghcr.io/astral-sh/uv:latest": {}
+  },
+  "postCreateCommand": "uv sync",
+  "postStartCommand": "uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 &",
+  "forwardPorts": [8000],
+  "portsAttributes": {
+    "8000": {
+      "label": "School Finder App",
+      "onAutoForward": "openBrowser"
+    }
+  }
+}
