@@ -1,0 +1,10 @@
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+.ruff_cache
+render.yaml
+.devcontainer
+*.md
+!README.md
